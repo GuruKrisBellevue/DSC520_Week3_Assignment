@@ -22,7 +22,7 @@ knitr::opts_knit$set(root.dir ="C:/Users/Gurup/GURU/Learning/Masters/Term_2/DSC5
 
 ## 1. List the name of each field and what you believe the data type and intent is of the data included in each field (Example: Id - Data Type: varchar (contains text and numbers) Intent: unique identifier for each row)
 
-## 1. Solution
+## Solution
 ####       i. Id -  DataType: varchar (contains text and numbers); Intent: unique identifier for each row
 ####       ii. Id2 - DataType: Integer (contains only numbers); Intent: Looks like 5 digit zip code, hence another unique             identifier   for each county
 ####       iii. Geography - DataType: Character; Intent:Description of name of the county
@@ -60,9 +60,11 @@ ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(bins = 10,f
 #### Solution: The distribution is skewed to the left(negative skew)
 ## 4.6 Include a normal curve to the Histogram that you plotted.
 ```{r}
-ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(bins = 10,fill="pink")+labs(title="High School Degree percent distribution in Population",x="Percentage of High School degree holders",y="Number of counties")+geom_density(aes(y=after_stat(count)),col="red",linewidth=2)+theme_bw()
-
+# Plotting curve using stat_function
 ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(aes(y=after_stat(density)),binwidth=2,fill="pink")+labs(title="High School Degree percent distribution",x="High School degree  percentage",y="Probablity")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df1$HSDegree),sd=sd(population_by_county_df1$HSDegree)),col="red",linewidth=2)+theme_bw()
+
+# Plotting curve using geom_density
+ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(bins = 10,fill="pink")+labs(title="High School Degree percent distribution in Population",x="Percentage of High School degree holders",y="Number of counties")+geom_density(aes(y=after_stat(count)),col="red",linewidth=2)+theme_bw()
 ```
 
 
@@ -79,8 +81,12 @@ shapiro.test(population_by_county_df1$HSDegree)
 # 5. Create a Probability Plot of the HSDegree variable.
 ```{r}
 library(qqplotr)
-ggplot(mapping = aes(sample = population_by_county_df1$HSDegree))+ stat_qq_point(size = 2,color = "red")+stat_qq_line(color="blue")+ labs(x="High School Degree", y="High School Degree Percent", title="QQ plot of High School Degree")+theme_bw()
+ggplot(data =population_by_county_df1["HSDegree"], aes(sample = population_by_county_df1$HSDegree))+ 
+    stat_qq_point(size = 2,color = "red",distribution = "norm")+stat_qq_line(color="blue")+ 
+    labs(x="High School Degree", y="High School Degree Percent", title="QQ plot of High School Degree")+theme_bw()
 
+
+# Using stat_function 
 ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(aes(y=after_stat(density)),bins=10,fill="pink")+ labs(title="High School Degree percent distribution",x="High School degree percentage",y="Probability")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df1$HSDegree),sd=sd(population_by_county_df1$HSDegree)),col="red",linewidth=2)+theme_bw()
 ```
 
@@ -116,20 +122,16 @@ population_by_county_df1$zScores <-  (population_by_county_df1$HSDegree-mean(pop
 head(population_by_county_df1[(order(population_by_county_df1$zScores)),][c("HSDegree","zScores")])
 tail(population_by_county_df1[(order(population_by_county_df1$zScores)),][c("HSDegree","zScores")])
 ```
-
-
 #### The results from the tail command above indicates that the negative scores of HSDegree values such as 62,70,74 are outliers which have probability percentage lesser than 0.34% according to table of standard normal distribution.The results from head command indicates that the z-scores ranging from 1.5 to 1.2 are not too much skewed.
 ```{r}
-## Creating a new dataframe df2 with onnly 40 samples
+## Creating a new dataframe df2 with only 40 samples
 population_by_county_df2 <- head(population_by_county_df1,n=40)
 stat.desc(population_by_county_df2["HSDegree"],norm=TRUE)
 # creating a new field called new z-score in the df2 dataframe
 population_by_county_df2$new_zScores <- (population_by_county_df2$HSDegree-mean(population_by_county_df2$HSDegree))/sd(population_by_county_df2$HSDegree)
 head(population_by_county_df2[(order(population_by_county_df2$new_zScores)),][c("HSDegree","zScores","new_zScores")])
 tail(population_by_county_df2[(order(population_by_county_df2$new_zScores)),][c("HSDegree","zScores","new_zScores")])
-ggplot(data=population_by_county_df2,aes(x=HSDegree))+geom_histogram(aes(y=..density..),bins=10,fill="pink")+labs(title="High School Degree percent distribution",x="High School degree percentage",y="Probability")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df2$HSDegree),sd=sd(population_by_county_df2$HSDegree)),col="red",size=2)+theme_bw()
+ggplot(data=population_by_county_df2,aes(x=HSDegree))+geom_histogram(aes(y=after_stat(density)),bins=10,fill="pink")+labs(title="High School Degree percent distribution",x="High School degree percentage",y="Probability")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df2$HSDegree),sd=sd(population_by_county_df2$HSDegree)),col="red",linewidth=2)+theme_bw()
 ```
-
-
 
 #### By restricting the sample size to just 40, kurtosis, skewness and z-scores are impacted.The Kurtosis is now 0.18 which indicates model is platykurtic and the skewness is now reduced to -0.99673 which still indicates negative skew. Also the new z-score is calculated in the dataframe population_by_county_df2.These results indicate that sample size and also the values in the samples hugely impact the statistical results
