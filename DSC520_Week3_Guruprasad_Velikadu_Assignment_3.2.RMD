@@ -1,0 +1,135 @@
+---
+title: "DSC520_Week3_Guruprasad_Velikadu_Assignment3.2"
+author: "Guruprasad Velikadu Krishnamoorthy"
+date: "2022-12-18"
+output: 
+  pdf_document: 
+    highlight: espresso
+---
+```{r}
+# Including the libraries and setting the global theme
+library(ggplot2)
+theme_set(theme_minimal())
+library(formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Set the working directory to the root of your DSC 520 directory
+```{r}
+# setting working directory
+knitr::opts_knit$set(root.dir ="C:/Users/Gurup/GURU/Learning/Masters/Term_2/DSC520_T302_Statistics_for_Data_Science/Week_3")
+```
+
+## 1. List the name of each field and what you believe the data type and intent is of the data included in each field (Example: Id - Data Type: varchar (contains text and numbers) Intent: unique identifier for each row)
+
+## 1. Solution
+####       i. Id -  DataType: varchar (contains text and numbers); Intent: unique identifier for each row
+####       ii. Id2 - DataType: Integer (contains only numbers); Intent: Looks like 5 digit zip code, hence another unique             identifier   for each county
+####       iii. Geography - DataType: Character; Intent:Description of name of the county
+####       iv. PopGroupID - DataType: Integer; Intent: The dataset has one value of 1. Hence it may be a batchID to                representset of  population groups
+####       v. POPGROUP.display-label- DataType: Character; Intent:This has the value of "Total population" for all the                rows.Hence this may be description column.
+####       vi. RacesReported- Datatype:Integer; Intent: This represents the entire population of the county.
+####       vii. HSDegree - Datatype:Numeric; Intent: This represents the percentage of population of county that has High                    SchoolDegree.
+####       viii. BachDegree - Datatype:Numeric; Intent: This represents the percentage of population of county that has                Bachelor's Degree.
+
+## 2.Run the following functions and provide the results: str(); nrow(); ncol()
+```{r}
+population_by_county_df1 <- read.csv(file="acs-14-1yr-s0201.csv",header=TRUE,stringsAsFactors = FALSE)
+str(population_by_county_df1)
+nrow(population_by_county_df1)
+ncol(population_by_county_df1)
+```
+
+
+
+## 3.Create a Histogram of the HSDegree variable using the ggplot2 package. Set a bin size for the Histogram that you think best visuals the data (the bin size will determine how many bars display and how wide they are). Include a Title and appropriate X/Y axis labels on your Histogram Plot.
+```{r}
+ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(bins = 10,fill="pink")+labs(title="High School Degree percent distribution in Population",x="Percentage of High School degree holders",y="Number of counties")+theme_bw()
+```
+
+## 4.Answer the following questions based on the Histogram produced:
+## 4.1  Based on what you see in this histogram, is the data distribution unimodal?
+#### Solution: The data distribution is unimodal with one peak 
+## 4.2  Is it approximately symmetrical?
+#### Solution: The distribution is NOT symmetrical, because it is skewed and it is asymmetrical.
+## 4.3  Is it approximately bell-shaped?
+#### Solution: Yes it is approximately bell shaped but not exactly bell shaped.
+## 4.4 Is it approximately normal?
+#### Solution: The distribution is not Normal distribution. 
+## 4.5 If not normal, is the distribution skewed? If so, in which direction?
+#### Solution: The distribution is skewed to the left(negative skew)
+## 4.6 Include a normal curve to the Histogram that you plotted.
+```{r}
+ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(bins = 10,fill="pink")+labs(title="High School Degree percent distribution in Population",x="Percentage of High School degree holders",y="Number of counties")+geom_density(aes(y=after_stat(count)),col="red",linewidth=2)+theme_bw()
+
+ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(aes(y=after_stat(density)),binwidth=2,fill="pink")+labs(title="High School Degree percent distribution",x="High School degree  percentage",y="Probablity")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df1$HSDegree),sd=sd(population_by_county_df1$HSDegree)),col="red",linewidth=2)+theme_bw()
+```
+
+
+## 4.7 Explain whether a normal distribution can accurately be used as a model for this data.
+```{r}
+ggplot(data=population_by_county_df1,aes(y=HSDegree))+geom_boxplot()+theme_bw()+labs(title="Box plot for HSDegree")
+shapiro.test(population_by_county_df1$HSDegree)
+```
+
+
+#### Solution: The distribution deviates from the normal distribution as it is skewed and hence it is not a normal      distribution.In the boxplot, the whiskers are of varying length and the lower whisker is longer than the upper one. Also there are many outliers below the lower whisker. All these explains the model is skewed to the left and asymmetrical and deviates from the normal distribution.Also from Shapiro-Wilk normality test, the p value is 0.000000003 which is less than 0.05 which indicates the model is Not a normal distribution
+
+
+# 5. Create a Probability Plot of the HSDegree variable.
+```{r}
+library(qqplotr)
+ggplot(mapping = aes(sample = population_by_county_df1$HSDegree))+ stat_qq_point(size = 2,color = "red")+stat_qq_line(color="blue")+ labs(x="High School Degree", y="High School Degree Percent", title="QQ plot of High School Degree")+theme_bw()
+
+ggplot(data=population_by_county_df1,aes(x=HSDegree))+geom_histogram(aes(y=after_stat(density)),bins=10,fill="pink")+ labs(title="High School Degree percent distribution",x="High School degree percentage",y="Probability")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df1$HSDegree),sd=sd(population_by_county_df1$HSDegree)),col="red",linewidth=2)+theme_bw()
+```
+
+
+# 6 Answer the following questions based on the Probability Plot:
+## 6.1 Based on what you see in this probability plot, is the distribution approximately normal? Explain how you know.
+#### Solution: The distribution is not approximately normal, the reason being in the QQ plot, the data points clearly deviate from the straight line and don't follow along the line.
+## 6.2 If not normal, is the distribution skewed? If so, in which direction? Explain how you know.
+#### Solution: The distribution is definitely skewed and towards the left mostly(Negative skew). In the bottom end of the QQ Plot, the data points deviate from the straight line which clearly states that the distribution has longer tail towards the left. Also there are many outliers in bottom end of the plot. Though some points deviate in  the upper end, it is more pronounced in the bottom end.        
+
+## 7. Now that you have looked at this data visually for normality, you will now quantify normality with numbers using the stat.desc() function.Include a screen capture of the results produced.
+```{r}
+library(pastecs)
+options(scipen=100)
+options(digits=2)
+stat.desc(population_by_county_df1["HSDegree"],norm=TRUE)
+```
+
+
+
+## 8. In several sentences provide an explanation of the result produced for skew, kurtosis, and z-scores.In addition, explain how a change in the sample size may change your explanation?
+```{r}
+## Creating a new field for Z Score
+population_by_county_df1$zScores <-  (population_by_county_df1$HSDegree-mean(population_by_county_df1$HSDegree))/sd(population_by_county_df1$HSDegree)
+
+```
+
+
+
+
+## Solution: The Skewness of the distribution is -1.67 which indicates it deviates from the normal distribution skewness of 0. Also the number indicates it is negatively skewed.The kurtosis of the distribution is 4.35 which is more than the normal distribution range of 3 and it indicates the distribution is leptokurtic as it has a big tail on the negative end of the distribution.
+```{r}
+head(population_by_county_df1[(order(population_by_county_df1$zScores)),][c("HSDegree","zScores")])
+tail(population_by_county_df1[(order(population_by_county_df1$zScores)),][c("HSDegree","zScores")])
+```
+
+
+#### The results from the tail command above indicates that the negative scores of HSDegree values such as 62,70,74 are outliers which have probability percentage lesser than 0.34% according to table of standard normal distribution.The results from head command indicates that the z-scores ranging from 1.5 to 1.2 are not too much skewed.
+```{r}
+## Creating a new dataframe df2 with onnly 40 samples
+population_by_county_df2 <- head(population_by_county_df1,n=40)
+stat.desc(population_by_county_df2["HSDegree"],norm=TRUE)
+# creating a new field called new z-score in the df2 dataframe
+population_by_county_df2$new_zScores <- (population_by_county_df2$HSDegree-mean(population_by_county_df2$HSDegree))/sd(population_by_county_df2$HSDegree)
+head(population_by_county_df2[(order(population_by_county_df2$new_zScores)),][c("HSDegree","zScores","new_zScores")])
+tail(population_by_county_df2[(order(population_by_county_df2$new_zScores)),][c("HSDegree","zScores","new_zScores")])
+ggplot(data=population_by_county_df2,aes(x=HSDegree))+geom_histogram(aes(y=..density..),bins=10,fill="pink")+labs(title="High School Degree percent distribution",x="High School degree percentage",y="Probability")+stat_function(fun=dnorm,args=list(mean=mean(population_by_county_df2$HSDegree),sd=sd(population_by_county_df2$HSDegree)),col="red",size=2)+theme_bw()
+```
+
+
+
+#### By restricting the sample size to just 40, kurtosis, skewness and z-scores are impacted.The Kurtosis is now 0.18 which indicates model is platykurtic and the skewness is now reduced to -0.99673 which still indicates negative skew. Also the new z-score is calculated in the dataframe population_by_county_df2.These results indicate that sample size and also the values in the samples hugely impact the statistical results

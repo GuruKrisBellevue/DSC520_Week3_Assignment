@@ -1,0 +1,125 @@
+---
+title: "DSC520_Week3.1_Guruprasad_Velikadu_Assignment03"
+author: "Guruprasad Velikadu Krishnamoorthy"
+date: "2022-12-18"
+output: 
+  pdf_document: 
+    toc: yes
+    number_sections: yes
+    highlight: espresso
+    
+---
+
+# Assignment
+
+## Load the ggplot2 package
+```{r}
+library(ggplot2)
+theme_set(theme_minimal())
+library(formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Set the working directory to the root of your DSC 520 directory
+```{r}
+knitr::opts_knit$set(root.dir ="C:/Users/Gurup/GURU/Learning/Masters/Term_2/DSC520_T302_Statistics_for_Data_Science/Week_1/forked_example/dsc520_Week_1_Assignment_forkedExample")
+```
+
+
+
+## Load the `data/r4ds/heights.csv` to
+```{r}
+heights_df <- read.csv("data/r4ds/heights.csv")
+```
+
+
+
+## https://ggplot2.tidyverse.org/reference/geom_point.html
+### Using `geom_point()` create three scatterplots for
+### `height` vs. `earn`
+```{r}
+ggplot(data=heights_df, aes(x=height, y=earn)) + geom_point(size=3)+theme_bw()+labs(title= "height vs earn")
+```
+
+
+
+## `age` vs. `earn`
+```{r}
+ggplot(data=heights_df, aes(x=age, y=earn)) + geom_point(size=3)+theme_bw()+labs(title= "age vs earn")
+```
+
+
+## `ed` vs. `earn`
+```{r}
+ggplot(data=heights_df, aes(x=ed, y=earn)) + geom_point(size=3)+theme_bw()+labs(title= "ed vs earn")
+```
+
+
+
+## Re-create the three scatterplots and add a regression trend line using
+### the `geom_smooth()` function
+### `height` vs. `earn`
+```{r}
+ggplot(data=heights_df, aes(x=height, y=earn)) + geom_point(size=3) +geom_smooth()+theme_bw()+labs(title= "height vs earn")
+```
+
+## `age` vs. `earn`
+```{r}
+ggplot(data=heights_df, aes(x=age, y=earn)) + geom_point(size=3) + geom_smooth()+theme_bw()+labs(title= "age vs earn")
+```
+
+
+
+## `ed` vs. `earn`
+```{r}
+ggplot(data=heights_df, aes(x=ed, y=earn)) + geom_point(size=3) + geom_smooth(size=2)+theme_bw()+labs(title= "ed vs earn")
+```
+
+
+
+## Create a scatterplot of `height`` vs. `earn`.  Use `sex` as the `col` (color) attribute
+```{r}
+ggplot(data=heights_df, aes(x=height, y=earn, col=sex)) + geom_point(size=3)+theme_bw()+labs(title= "height vs earn")
+```
+
+
+
+## Using `ggtitle()`, `xlab()`, and `ylab()` to add a title, x label, and y label to the previous plot
+### Title: Height vs. Earnings
+### X label: Height (Inches)
+### Y Label: Earnings (Dollars)
+```{r}
+ggplot(data=heights_df, aes(x=height, y=earn, col=sex)) + geom_point(size=3) + ggtitle("Height vs. Earnings") + xlab("Height (Inches)") + ylab("Earnings (Dollars)")+theme_bw()
+```
+
+
+
+## https://ggplot2.tidyverse.org/reference/geom_histogram.html
+### Create a histogram of the `earn` variable using `geom_histogram()`
+```{r}
+ggplot(data=heights_df, aes(x=earn)) + geom_histogram()+theme_bw()+labs(title= "Earnings")
+```
+
+
+
+## Create a histogram of the `earn` variable using `geom_histogram()`
+### Use 10 bins
+```{r}
+ggplot(data=heights_df, aes(x=earn)) + geom_histogram(bins = 10)+theme_bw()+labs(title= "Earnings")
+```
+
+
+
+## https://ggplot2.tidyverse.org/reference/geom_density.html
+### Create a kernel density plot of `earn` using `geom_density()`
+```{r}
+ggplot(data=heights_df, aes(x=earn)) +  geom_density(size=1)+theme_bw()+labs(title= "Earnings")
+```
+
+# Session Info
+```{r}
+sessionInfo()
+```
+
+
+
